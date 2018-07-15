@@ -1,21 +1,31 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Drawing;
+using System.Diagnostics;
+using OverlayWindow;
+using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
+using Color = Microsoft.Xna.Framework.Color;
+using Keys = Microsoft.Xna.Framework.Input.Keys;
+using System;
 
 namespace SimpleOverlayWindow
 {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class Game1 : Game
+    public class Game1 : FullScreenOverlayGame
     {
-        GraphicsDeviceManager graphics;
+        //GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Texture2D icon = null;
+        byte transparency = 128;
+        bool letGo = false;
 
         public Game1()
         {
-            graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
+            //graphics = new GraphicsDeviceManager(this);
+            //Content.RootDirectory = "Content";
         }
 
         /// <summary>
@@ -41,6 +51,8 @@ namespace SimpleOverlayWindow
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            icon = Content.Load<Texture2D>("BasicIcon");
+
         }
 
         /// <summary>
@@ -60,11 +72,40 @@ namespace SimpleOverlayWindow
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
                 Exit();
+            }
+            if (GamePad.GetState(PlayerIndex.One).Buttons.X == ButtonState.Pressed || 
+                ( ( Keyboard.GetState().IsKeyDown(Keys.LeftControl) || Keyboard.GetState().IsKeyDown(Keys.RightControl) ) &&
+                 Keyboard.GetState().IsKeyDown(Keys.OemTilde) ) )
+            {
+                if (letGo == false)
+                {
+                    switch (transparency)
+                    {
+                        default:
+                        case 0:
+                            transparency = 128;
+                            break;
+                        case 128:
+                            transparency = 255;
+                            break;
+                        case 255:
+                            transparency = 0;
+                            break;
+                    }
+                    letGo = true;
+                }
+            }
+            else
+            {
+                letGo = false;
+            }
 
-            // TODO: Add your update logic here
 
-            base.Update(gameTime);
+                // TODO: Add your update logic here
+
+                base.Update(gameTime);
         }
 
         /// <summary>
@@ -73,9 +114,19 @@ namespace SimpleOverlayWindow
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Transparent);
+
+            spriteBatch.Begin();
 
             // TODO: Add your drawing code here
+            Vector2 center = new Vector2(GetVirtualScreenAreaSize().Width / 2f, GetVirtualScreenAreaSize().Height / 2f);
+            if (icon != null)
+            {
+                Vector2 origin = new Vector2(icon.Width / 2f, icon.Height / 2f);
+                spriteBatch.Draw(icon, center, null, new Color(Color.White.R, Color.White.G, Color.White.B, transparency), 0, origin, 1, SpriteEffects.None, 0);
+            }
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
