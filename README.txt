@@ -1,4 +1,6 @@
-Installer is at https://github.com/pmzeitler/SimpleOverlayWindow/blob/master/SimpleOverlayWindow_Installer/SimpleOverlayWindow_Installer-SetupFiles/SimpleOverlayWindow_Installer.msi
+Bleeding-edge Installer is at https://github.com/pmzeitler/SimpleOverlayWindow/blob/master/SimpleOverlayWindow_Installer/SimpleOverlayWindow_Installer-SetupFiles/SimpleOverlayWindow_Installer.msi
+
+Current stable installer is at https://github.com/pmzeitler/SimpleOverlayWindow/blob/v0.99-rc1/SimpleOverlayWindow_Installer/SimpleOverlayWindow_Installer-SetupFiles/SimpleOverlayWindow_Installer.msi
 
 Instructions:
 
