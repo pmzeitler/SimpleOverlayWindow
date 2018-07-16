@@ -1,4 +1,4 @@
-Installer is at SimpleOverlayWindow/SimpleOverlayWindow_Installer/SimpleOverlayWindow_Installer-SetupFiles/SimpleOverlayWindow_Installer.msi
+Installer is at https://github.com/pmzeitler/SimpleOverlayWindow/blob/master/SimpleOverlayWindow_Installer/SimpleOverlayWindow_Installer-SetupFiles/SimpleOverlayWindow_Installer.msi
 
 Instructions:
 
