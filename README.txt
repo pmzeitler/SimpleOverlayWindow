@@ -1,3 +1,5 @@
+Installer is at SimpleOverlayWindow/SimpleOverlayWindow_Installer/SimpleOverlayWindow_Installer-SetupFiles/SimpleOverlayWindow_Installer.msi
+
 Instructions:
 
 CTRL-~ (tilde or backtick-- no need for Shift): Adjust the transparency. There are 5 levels of transparency, including "opaque" and "not displayed".
