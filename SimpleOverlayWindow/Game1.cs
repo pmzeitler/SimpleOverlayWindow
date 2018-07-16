@@ -1,13 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Drawing;
-using System.Diagnostics;
 using OverlayWindow;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Color = Microsoft.Xna.Framework.Color;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
-using System;
+using System.Windows.Forms;
+using System.IO;
 
 namespace SimpleOverlayWindow
 {
@@ -20,7 +19,11 @@ namespace SimpleOverlayWindow
         SpriteBatch spriteBatch;
         Texture2D icon = null;
         byte transparency = 128;
-        bool letGo = false;
+        bool transparencyLetGo = false;
+        bool fileSelectLetGo = false;
+        bool openFileSelect = true;
+        OpenFileDialog fileOpenDialog = null;
+        DialogResult result = DialogResult.None;
 
         public Game1()
         {
@@ -37,6 +40,14 @@ namespace SimpleOverlayWindow
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            fileOpenDialog = new OpenFileDialog();
+
+            fileOpenDialog.InitialDirectory = "c:\\";
+            fileOpenDialog.Filter = "Images (*.jpg;*.bmp;*.png;*.gif)|*.jpg;*.bmp;*.png;*.gif|All files (*.*)|*.*";
+            fileOpenDialog.FilterIndex = 1;
+            fileOpenDialog.RestoreDirectory = false;
+            fileOpenDialog.CheckFileExists = true;
+
 
             base.Initialize();
         }
@@ -51,7 +62,7 @@ namespace SimpleOverlayWindow
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            icon = Content.Load<Texture2D>("BasicIcon");
+            icon = Content.Load<Texture2D>("BaseInstructions");
 
         }
 
@@ -75,37 +86,78 @@ namespace SimpleOverlayWindow
             {
                 Exit();
             }
-            if (GamePad.GetState(PlayerIndex.One).Buttons.X == ButtonState.Pressed || 
-                ( ( Keyboard.GetState().IsKeyDown(Keys.LeftControl) || Keyboard.GetState().IsKeyDown(Keys.RightControl) ) &&
-                 Keyboard.GetState().IsKeyDown(Keys.OemTilde) ) )
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Y == ButtonState.Pressed ||
+                ((Keyboard.GetState().IsKeyDown(Keys.LeftControl) || Keyboard.GetState().IsKeyDown(Keys.RightControl)) &&
+                 Keyboard.GetState().IsKeyDown(Keys.OemTilde)))
             {
-                if (letGo == false)
+                if (transparencyLetGo == false)
                 {
                     switch (transparency)
                     {
                         default:
                         case 0:
+                            transparency = 64;
+                            break;
+                        case 64:
                             transparency = 128;
                             break;
                         case 128:
+                            transparency = 192;
+                            break;
+                        case 192:
                             transparency = 255;
                             break;
                         case 255:
                             transparency = 0;
                             break;
                     }
-                    letGo = true;
+                    transparencyLetGo = true;
                 }
             }
             else
             {
-                letGo = false;
+                transparencyLetGo = false;
+            }
+
+            if (GamePad.GetState(PlayerIndex.One).Buttons.X == ButtonState.Pressed ||
+               ((Keyboard.GetState().IsKeyDown(Keys.LeftControl) || Keyboard.GetState().IsKeyDown(Keys.RightControl)) &&
+                Keyboard.GetState().IsKeyDown(Keys.OemPipe)))
+            {
+                if (fileSelectLetGo == false)
+                {
+                    if (openFileSelect == true)
+                    {
+                        result = fileOpenDialog.ShowDialog();
+                        fileSelectLetGo = true;
+                        openFileSelect = false;
+                    }
+                    if (result == DialogResult.OK)
+                    {
+                        string fileName = fileOpenDialog.FileName;
+                        FileStream filestream = new FileStream(fileName, FileMode.Open);
+                        icon = Texture2D.FromStream(GraphicsDevice, filestream);
+                        filestream.Dispose();
+                        openFileSelect = true;
+                    }
+                    else if (result == DialogResult.Cancel)
+                    {
+                        openFileSelect = true;
+                    }
+                    else if (result == DialogResult.None)
+                    {
+                        // do nothing
+                    }
+                }
+            }
+            else
+            {
+                fileSelectLetGo = false;
             }
 
 
-                // TODO: Add your update logic here
+            // TODO: Add your update logic here
 
-                base.Update(gameTime);
+            base.Update(gameTime);
         }
 
         /// <summary>
@@ -116,7 +168,7 @@ namespace SimpleOverlayWindow
         {
             GraphicsDevice.Clear(Color.Transparent);
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
 
             // TODO: Add your drawing code here
             Vector2 center = new Vector2(GetVirtualScreenAreaSize().Width / 2f, GetVirtualScreenAreaSize().Height / 2f);
